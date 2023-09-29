@@ -11,6 +11,8 @@ target/
 *.iws
 *.iml
 *.ipr
+src/main/java/org/ibolar/help/Config.java
+src/assets/
 
 ### Eclipse ###
 .apt_generated
@@ -33,6 +35,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
 
 ### Mac OS ###
 .DS_Store
