@@ -1,13 +1,17 @@
 package org.ibolar.gui;
 
+import com.google.gson.Gson;
 import org.ibolar.help.Config;
 import org.ibolar.help.Helper;
+import org.ibolar.service.WeatherApp;
+import org.json.simple.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
 
 
 public class MainScreen extends JFrame {
+    private JSONObject weatherData;
 
     public MainScreen(){
         super("Weather App");
@@ -28,11 +32,6 @@ public class MainScreen extends JFrame {
         searchTextField.setFont(new Font("DialogInput", Font.PLAIN, 24));
         add(searchTextField);
 
-        //Search Button
-        JButton searchButton = new JButton(Helper.loadImage("src/assets/search.png"));
-        searchButton.setBounds(402, 20, 30, 30);
-        searchButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        add(searchButton);
 
         //Weather Image
         JLabel weatherImage = new JLabel(Helper.loadImage("src/assets/sun.png"));
@@ -76,6 +75,55 @@ public class MainScreen extends JFrame {
         windspeedText.setBounds(337, 431, 90,55);
         windspeedText.setFont(new Font("DialogInput", Font.PLAIN, 16));
         add(windspeedText);
+
+        //Search Button
+        JButton searchButton = new JButton(Helper.loadImage("src/assets/search.png"));
+        searchButton.setBounds(402, 20, 30, 30);
+        searchButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        searchButton.addActionListener(e -> {
+            String locationInput = searchTextField.getText();
+            if(locationInput.replaceAll("\\s", "").length() <= 0){
+                return;
+            }
+
+            //weather data
+            weatherData = WeatherApp.getWeatherData(locationInput);
+
+            String weatherCondition = (String) weatherData.get("weatherCondition");
+
+            // depending on the condition, we will update the weather image that corresponds with the condition
+            switch(weatherCondition){
+                case "Clear":
+                    weatherImage.setIcon(Helper.loadImage("src/assets/clear.png"));
+                    break;
+                case "Cloudy":
+                    weatherImage.setIcon(Helper.loadImage("src/assets/cloudy.png"));
+                    break;
+                case "Rain":
+                    weatherImage.setIcon(Helper.loadImage("src/assets/rain.png"));
+                    break;
+                case "Snow":
+                    weatherImage.setIcon(Helper.loadImage("src/assets/snow.pngImage"));
+                    break;
+            }
+
+            // update temperature text
+            double temperature = (double) weatherData.get("temperature");
+            weatherText.setText(temperature + " C");
+
+            // update weather condition text
+            weatherStatus.setText(weatherCondition);
+
+            // update humidity text
+            long humidity = (long) weatherData.get("humidity");
+            humidityText.setText("<html><b>Humidity</b> " + humidity + "%</html>");
+
+            // update windspeed text
+            double windspeed = (double) weatherData.get("windspeed");
+            windspeedText.setText("<html><b>Windspeed</b> " + windspeed + "km/h</html>");
+
+        });
+        add(searchButton);
 
 
     }
